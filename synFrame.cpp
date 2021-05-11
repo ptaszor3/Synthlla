@@ -2,6 +2,7 @@
 #include "synSlider.hpp"
 #include "synARSD.hpp"
 #include "synRectangle.hpp"
+#include "synSynchronizedVibrato.hpp"
 #include "synEffectInputsManager.hpp"
 #include "synSignalInputsManager.hpp"
 
@@ -79,23 +80,28 @@ synFrame::synFrame(std::string title, wxPoint position, wxSize size)
 	::signal_manager.insert("Sinusoidal", reinterpret_cast<Signal*>(new tones::basic::Sin));
 
 	auto main_signals = ::signal_manager.get_new_input(this, wxID_ANY, reinterpret_cast<Signal**>(&instrument->tone), wxPoint(0, 400), wxSize(300, 30));
+	auto main_effect = ::effect_manager.get_new_input(this, wxID_ANY, instrument, wxPoint(0, 430), wxSize(300, 30));
 }
 
 void synFrame::OnVolumeControl(wxCommandEvent& event) {
 	effects::VolumeControl* volume_control = new effects::VolumeControl;
 	wxWindow* window = new wxWindow(notebook, wxID_ANY);
 	synSlider* slider = new synSlider(window, wxID_ANY, "Volume", 0, 100, 100, reinterpret_cast<void*>(&volume_control->volume), [](void* data, int value){*reinterpret_cast<double*>(data) = value / 100.0;}, wxDefaultPosition, synSlider::Styles::FIXED);
-	//manager.insert("Volume", dynamic_cast<WholeSampleEffect*>(volume_control));
-	//notebook->AddPage(window, "Volume");
+	effect_manager.insert("Volume", dynamic_cast<WholeSampleEffect*>(volume_control));
+	notebook->AddPage(window, "Volume");
 }
 
 void synFrame::OnRectangle(wxCommandEvent& event) {
 	notebook->AddPage(new synRectangle(notebook), "Rectangle");
 }
 
+void synFrame::OnSynchronizedVibrato(wxCommandEvent& event) {
+	notebook->AddPage(new synSynchronizedVibrato(notebook), "Synchronized vibrato");
+}
+
 wxBEGIN_EVENT_TABLE(synFrame, wxFrame)
 	EVT_MENU(901, synFrame::OnVolumeControl)
-	//EVT_MENU(902, synFrame::OnSynchronizedVibrato)
+	EVT_MENU(902, synFrame::OnSynchronizedVibrato)
 	//EVT_MENU(903, synFrame::OnUnsynchronizedVibrato)
 	//EVT_MENU(904, synFrame::OnSynchronizedTremolo)
 	//EVT_MENU(905, synFrame::OnUnsynchronizedTremolo)

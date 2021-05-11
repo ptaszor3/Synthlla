@@ -3,7 +3,7 @@
 #include <algorithm>
 
 synEffectInput::synEffectInput(wxWindow* parent, wxWindowID id, Instrument* c_destination, wxPoint position, wxSize size)
-:wxChoice{parent, id, position, size}, destination{c_destination} {
+:wxChoice{parent, id, position, size}, destination{c_destination}, last_choice_type{NONE} {
 	Bind(wxEVT_CHOICE, &synEffectInput::OnChoice, this, wxID_ANY);
 }
 
