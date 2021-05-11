@@ -12,10 +12,10 @@ public:
 	synRectangle(wxWindow* parent, wxWindowID id = wxID_ANY, wxPoint position = wxDefaultPosition, wxSize size = wxDefaultSize) 
 	:wxWindow(parent, id, position, size){
 		new synSlider(this, wxID_ANY, "Infill", 0, 100, 50, reinterpret_cast<void*>(&infill), [](void* data, int value){*reinterpret_cast<double*>(data) = value / 100.0;}, wxDefaultPosition, synSlider::Styles::FIXED);
-		manager.insert<Signal>("Rectangle", this);
+		manager.insert("Rectangle", this);
 	}
 
 	~synRectangle() {
-		manager.erase<Signal>("Rectangle");
+		manager.erase_signal("Rectangle");
 	}
 };

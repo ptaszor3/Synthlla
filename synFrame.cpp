@@ -3,6 +3,7 @@
 #include "synARSD.hpp"
 #include "synAllInputsManager.hpp"
 #include "synRectangle.hpp"
+#include "synEffectInput.hpp"
 
 #include <iostream>
 #include <thread>
@@ -76,24 +77,18 @@ synFrame::synFrame(std::string title, wxPoint position, wxSize size)
 	::manager.insert("Triangular", reinterpret_cast<Signal*>(new tones::basic::Tri));
 	::manager.insert("Sinusoidal", reinterpret_cast<Signal*>(new tones::basic::Sin));
 
-	auto main_signals = ::manager.get_new_input<Signal>(this, wxID_ANY, reinterpret_cast<Signal**>(&instrument->tone), wxPoint(0, 400), wxSize(300, 30));
+	auto main_signals = ::manager.get_new_signal_input(this, wxID_ANY, reinterpret_cast<Signal**>(&instrument->tone), wxPoint(0, 400), wxSize(300, 30));
 }
 
 void synFrame::OnVolumeControl(wxCommandEvent& event) {
 	effects::VolumeControl* volume_control = new effects::VolumeControl;
 	wxWindow* window = new wxWindow(notebook, wxID_ANY);
 	synSlider* slider = new synSlider(window, wxID_ANY, "Volume", 0, 100, 100, reinterpret_cast<void*>(&volume_control->volume), [](void* data, int value){*reinterpret_cast<double*>(data) = value / 100.0;}, wxDefaultPosition, synSlider::Styles::FIXED);
-	manager.insert("Volume", dynamic_cast<WholeSampleEffect*>(volume_control));
-	notebook->AddPage(window, "Volume");
+	//manager.insert("Volume", dynamic_cast<WholeSampleEffect*>(volume_control));
+	//notebook->AddPage(window, "Volume");
 }
 
 void synFrame::OnRectangle(wxCommandEvent& event) {
-	/*tones::basic::Rect* tone = new tones::basic::Rect();
-	wxWindow* window = new wxWindow(notebook, wxID_ANY);
-	synSlider* slider = new synSlider(window, wxID_ANY, "Infill", 0, 100, 50, reinterpret_cast<void*>(&tone->infill), [](void* data, int value){*reinterpret_cast<double*>(data) = value / 100.0;}, wxDefaultPosition, synSlider::Styles::FIXED);
-	manager.insert("Rectangle", dynamic_cast<Signal*>(tone));
-	notebook->AddPage(window, "Rectangle");*/
-
 	notebook->AddPage(new synRectangle(notebook), "Rectangle");
 }
 
