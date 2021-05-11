@@ -1,8 +1,8 @@
-OBJECTS = synApp.o synFrame.o synSlider.o synARSD.o synSignalInput.o
-CPPFLAGS = `wx-config --cxxflags --libs`
+OBJECTS = synApp.o synFrame.o synSlider.o synARSD.o synInput.o synInputsManager.o synAllInputsManager.o
+CPPFLAGS = -std=c++17 `wx-config --cxxflags --libs` 
 
 out: $(OBJECTS)
-	g++ $(OBJECTS) -o out ../Synthall/libsynthall.a -lasound -lsfml-window `wx-config --cxxflags --libs`
+	g++ $(OBJECTS) -o out ../Synthall/libsynthall.a -lasound -lsfml-window `wx-config --libs aui ``wx-config --cxxflags --libs`
 	
 clean:
 	rm *.o

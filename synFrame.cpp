@@ -1,7 +1,8 @@
 #include "synFrame.hpp"
 #include "synSlider.hpp"
 #include "synARSD.hpp"
-#include "synSignalInput.hpp"
+#include "synAllInputsManager.hpp"
+#include "synRectangle.hpp"
 
 #include <iostream>
 #include <thread>
@@ -9,8 +10,49 @@
 outputs::ALSAOutputStream output;
 inputs::MIDIInput input;
 
+synAllInputsManager manager;
+
 synFrame::synFrame(std::string title, wxPoint position, wxSize size) 
-:wxFrame(nullptr, wxID_ANY, title, position, size){
+:wxFrame(nullptr, wxID_ANY, title, position, size) {
+
+	wxMenuBar *menu_bar = new wxMenuBar();
+	wxMenu *menu_new = new wxMenu;
+	menu_bar->Append(menu_new, "&New...");
+
+	wxMenu *menu_new_effects_submenu = new wxMenu;
+	menu_new_effects_submenu->Append(901, "Volume control");
+	menu_new_effects_submenu->Append(902, "Synchronized vibrato");
+	menu_new_effects_submenu->Append(903, "Unsynchronized vibrato");
+	menu_new_effects_submenu->Append(904, "Synchronized tremolo");
+	menu_new_effects_submenu->Append(905, "Unsynchronized tremolo");
+
+	menu_new->AppendSubMenu(menu_new_effects_submenu, "Effect...");
+
+	wxMenu *menu_new_tones_submenu = new wxMenu;
+	menu_new_tones_submenu->Append(701, "Rectangle");
+	menu_new_tones_submenu->Append(702, "Additive synthesizer");
+
+	menu_new->AppendSubMenu(menu_new_tones_submenu, "Tones...");
+
+	wxMenu *menu_new_envelopes_submenu = new wxMenu;
+	menu_new_envelopes_submenu->Append(801, "Quadratic arsd");
+	menu_new_envelopes_submenu->Append(802, "Linear arsd");
+
+	menu_new->AppendSubMenu(menu_new_envelopes_submenu, "Envelopes...");
+
+	SetMenuBar(menu_bar);
+
+	wxPanel* panel = new wxPanel(this, wxID_ANY);
+	notebook = new wxAuiNotebook(panel, wxID_ANY);
+
+	wxBoxSizer* panelSizer = new wxBoxSizer(wxHORIZONTAL);
+	panelSizer->Add(notebook, 1, wxEXPAND);
+	panel->SetSizer(panelSizer);
+
+	wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
+	topSizer->SetMinSize(250, 200);
+	topSizer->Add(panel, 1, wxEXPAND);
+	SetSizerAndFit(topSizer);
 
 	instrument = new Instrument(new tones::basic::Sqr, new envelopes::arsd::Quadratic, new timers::RealTimeTimer);
 	output.instrument = instrument;
@@ -27,14 +69,44 @@ synFrame::synFrame(std::string title, wxPoint position, wxSize size)
 	new std::thread([]()->void{while(true)output.update();});
 	new std::thread([]()->void{while(true)input.update();});
 
-	auto arsd = new synARSD(this, wxID_ANY, &reinterpret_cast<envelopes::arsd::Quadratic*>(instrument->envelope)->arsd, wxPoint(0, 0));
-	auto main_signals = new synSignalInput<Signal>(this, wxID_ANY, reinterpret_cast<Signal**>(&instrument->tone), wxPoint(0, 400), wxSize(300, 30));
-	main_signals->add_signal("Square", instrument->tone);
-	main_signals->add_signal("Sinusoidal", new tones::basic::Sin);
-	main_signals->add_signal("Saw", new tones::basic::Saw);
-	main_signals->add_signal("Triangular", new tones::basic::Tri);
+	notebook->AddPage(new synARSD(this, wxID_ANY, &reinterpret_cast<envelopes::arsd::Quadratic*>(instrument->envelope)->arsd, wxPoint(0, 0)), _("ARSD"));
+	
+	::manager.insert("Square", reinterpret_cast<Signal*>(instrument->tone));
+	::manager.insert("Saw", reinterpret_cast<Signal*>(new tones::basic::Saw));
+	::manager.insert("Triangular", reinterpret_cast<Signal*>(new tones::basic::Tri));
+	::manager.insert("Sinusoidal", reinterpret_cast<Signal*>(new tones::basic::Sin));
 
-	wxMenu menu;
-	menu.Append(1, "Something");
-	menu.Append(2, "Something else");
+	auto main_signals = ::manager.get_new_input<Signal>(this, wxID_ANY, reinterpret_cast<Signal**>(&instrument->tone), wxPoint(0, 400), wxSize(300, 30));
 }
+
+void synFrame::OnVolumeControl(wxCommandEvent& event) {
+	effects::VolumeControl* volume_control = new effects::VolumeControl;
+	wxWindow* window = new wxWindow(notebook, wxID_ANY);
+	synSlider* slider = new synSlider(window, wxID_ANY, "Volume", 0, 100, 100, reinterpret_cast<void*>(&volume_control->volume), [](void* data, int value){*reinterpret_cast<double*>(data) = value / 100.0;}, wxDefaultPosition, synSlider::Styles::FIXED);
+	manager.insert("Volume", dynamic_cast<WholeSampleEffect*>(volume_control));
+	notebook->AddPage(window, "Volume");
+}
+
+void synFrame::OnRectangle(wxCommandEvent& event) {
+	/*tones::basic::Rect* tone = new tones::basic::Rect();
+	wxWindow* window = new wxWindow(notebook, wxID_ANY);
+	synSlider* slider = new synSlider(window, wxID_ANY, "Infill", 0, 100, 50, reinterpret_cast<void*>(&tone->infill), [](void* data, int value){*reinterpret_cast<double*>(data) = value / 100.0;}, wxDefaultPosition, synSlider::Styles::FIXED);
+	manager.insert("Rectangle", dynamic_cast<Signal*>(tone));
+	notebook->AddPage(window, "Rectangle");*/
+
+	notebook->AddPage(new synRectangle(notebook), "Rectangle");
+}
+
+wxBEGIN_EVENT_TABLE(synFrame, wxFrame)
+	EVT_MENU(901, synFrame::OnVolumeControl)
+	//EVT_MENU(902, synFrame::OnSynchronizedVibrato)
+	//EVT_MENU(903, synFrame::OnUnsynchronizedVibrato)
+	//EVT_MENU(904, synFrame::OnSynchronizedTremolo)
+	//EVT_MENU(905, synFrame::OnUnsynchronizedTremolo)
+
+	EVT_MENU(701, synFrame::OnRectangle)
+	//EVT_MENU(702, synFrame::OnAdditiveSynthesizer)
+
+	//EVT_MENU(801, synFrame::OnQuadraticARSD)
+	//EVT_MENU(802, synFrame::OnLinearARSD)
+wxEND_EVENT_TABLE();
