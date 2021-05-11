@@ -8,13 +8,47 @@ synEffectInput::synEffectInput(wxWindow* parent, wxWindowID id, Instrument* c_de
 }
 
 void synEffectInput::insert(std::string name, SingleSampleEffect* effect) {
-	single_sample_effects.insert({name, effect});
-	Append(name);
+	bool is_there = false;
+	try {
+		single_sample_effects.at(name);
+		is_there = true;
+
+	}
+	catch(...){}
+	try { 
+		whole_sample_effects.at(name);
+		is_there = true;
+	}
+	catch(...){}
+
+	if(!is_there) {
+		single_sample_effects.insert({name, effect});
+		Append(name);
+	}
+	else
+		throw(NameHasAlreadyBeenInserted_exception());
 }
 
 void synEffectInput::insert(std::string name, WholeSampleEffect* effect) {
-	whole_sample_effects.insert({name, effect});
-	Append(name);
+	bool is_there = false;
+	try {
+		single_sample_effects.at(name);
+		is_there = true;
+
+	}
+	catch(...){}
+	try { 
+		whole_sample_effects.at(name);
+		is_there = true;
+	}
+	catch(...){}
+
+	if(!is_there) {
+		whole_sample_effects.insert({name, effect});
+		Append(name);
+	}
+	else
+		throw(NameHasAlreadyBeenInserted_exception());
 }
 
 void synEffectInput::erase_single_sample_effect(std::string name) {

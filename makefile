@@ -1,4 +1,4 @@
-OBJECTS = synApp.o synFrame.o synSlider.o synARSD.o synSignalInput.o synEffectInput.o synSignalInputsManager.o synAllInputsManager.o
+OBJECTS = synApp.o synFrame.o synSlider.o synARSD.o synSignalInput.o synEffectInput.o synSignalInputsManager.o synEffectInputsManager.o
 CPPFLAGS = -std=c++17 `wx-config --cxxflags --libs` 
 
 out: $(OBJECTS)

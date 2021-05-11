@@ -6,7 +6,7 @@ void synSignalInputsManager::insert(std::string name, Signal* output) {
 		x->insert(name, output);
 }
 
-void synSignalInputsManager::erase(std::string name) {
+void synSignalInputsManager::erase_signal(std::string name) {
 	outputs.erase(name);
 	for(auto& x : inputs)
 		x->erase(name);
@@ -20,7 +20,7 @@ synSignalInput* synSignalInputsManager::get_new_input(wxWindow* parent, wxWindow
 	return new_input;
 }
 
-void synSignalInputsManager::free(synSignalInput* input_to_be_freed) {
+void synSignalInputsManager::free_input(synSignalInput* input_to_be_freed) {
 	inputs.erase(input_to_be_freed);
 	delete input_to_be_freed;
 }

@@ -11,7 +11,7 @@ class synSignalInputsManager {
 	std::unordered_set<synSignalInput*> inputs;
 public:
 	void insert(std::string, Signal*);
-	void erase(std::string);
+	void erase_signal(std::string);
 	synSignalInput* get_new_input(wxWindow*, wxWindowID, Signal** destination, wxPoint = wxDefaultPosition, wxSize = wxDefaultSize);
-	void free(synSignalInput*);
+	void free_input(synSignalInput*);
 };

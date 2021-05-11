@@ -1,9 +1,9 @@
 #include "synFrame.hpp"
 #include "synSlider.hpp"
 #include "synARSD.hpp"
-#include "synAllInputsManager.hpp"
 #include "synRectangle.hpp"
-#include "synEffectInput.hpp"
+#include "synEffectInputsManager.hpp"
+#include "synSignalInputsManager.hpp"
 
 #include <iostream>
 #include <thread>
@@ -11,7 +11,8 @@
 outputs::ALSAOutputStream output;
 inputs::MIDIInput input;
 
-synAllInputsManager manager;
+synSignalInputsManager signal_manager;
+synEffectInputsManager effect_manager;
 
 synFrame::synFrame(std::string title, wxPoint position, wxSize size) 
 :wxFrame(nullptr, wxID_ANY, title, position, size) {
@@ -72,12 +73,12 @@ synFrame::synFrame(std::string title, wxPoint position, wxSize size)
 
 	notebook->AddPage(new synARSD(this, wxID_ANY, &reinterpret_cast<envelopes::arsd::Quadratic*>(instrument->envelope)->arsd, wxPoint(0, 0)), _("ARSD"));
 	
-	::manager.insert("Square", reinterpret_cast<Signal*>(instrument->tone));
-	::manager.insert("Saw", reinterpret_cast<Signal*>(new tones::basic::Saw));
-	::manager.insert("Triangular", reinterpret_cast<Signal*>(new tones::basic::Tri));
-	::manager.insert("Sinusoidal", reinterpret_cast<Signal*>(new tones::basic::Sin));
+	::signal_manager.insert("Square", reinterpret_cast<Signal*>(instrument->tone));
+	::signal_manager.insert("Saw", reinterpret_cast<Signal*>(new tones::basic::Saw));
+	::signal_manager.insert("Triangular", reinterpret_cast<Signal*>(new tones::basic::Tri));
+	::signal_manager.insert("Sinusoidal", reinterpret_cast<Signal*>(new tones::basic::Sin));
 
-	auto main_signals = ::manager.get_new_signal_input(this, wxID_ANY, reinterpret_cast<Signal**>(&instrument->tone), wxPoint(0, 400), wxSize(300, 30));
+	auto main_signals = ::signal_manager.get_new_input(this, wxID_ANY, reinterpret_cast<Signal**>(&instrument->tone), wxPoint(0, 400), wxSize(300, 30));
 }
 
 void synFrame::OnVolumeControl(wxCommandEvent& event) {

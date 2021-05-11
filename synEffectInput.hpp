@@ -2,6 +2,7 @@
 
 #include "../Synthall/Synthall"
 #include <wx/wx.h>
+#include <exception>
 
 class synEffectInput :public wxChoice {
 	std::map<std::string, SingleSampleEffect*> single_sample_effects;
@@ -24,4 +25,9 @@ public:
 	void erase_single_sample_effect(std::string);
 	void erase_whole_sample_effect(std::string);
 	void OnChoice(wxCommandEvent&);
+
+	class NameHasAlreadyBeenInserted_exception {
+	public:
+		const char* what() const noexcept {return "The given name has already been used";}
+	};
 };
