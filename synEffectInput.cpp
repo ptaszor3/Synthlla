@@ -81,10 +81,14 @@ void synEffectInput::OnChoice(wxCommandEvent& event) {
 
 	try {
 		destination->single_sample_effects.push_back(single_sample_effects.at(event.GetString().ToStdString()));
+		last.single_sample_effect = single_sample_effects.at(event.GetString().ToStdString());
+		last_choice_type = SINGLE_SAMPLE_EFFECT;
 	}
 	catch(...) {}
 	try {
 		destination->whole_sample_effects.push_back(whole_sample_effects.at(event.GetString().ToStdString()));
+		last.whole_sample_effect = whole_sample_effects.at(event.GetString().ToStdString());
+		last_choice_type = WHOLE_SAMPLE_EFFECT;
 	}
 	catch(...) {}
 	event.Skip();

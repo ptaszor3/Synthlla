@@ -13,6 +13,7 @@ public:
 	void OnUnsynchronizedVibrato(wxCommandEvent& event);
 	void OnSynchronizedTremolo(wxCommandEvent& event);
 	void OnUnsynchronizedTremolo(wxCommandEvent& event);
+	void OnVibrato(wxCommandEvent& event);
 
 	void OnRectangle(wxCommandEvent& event);
 	void OnAdditiveSynthesizer(wxCommandEvent& event);

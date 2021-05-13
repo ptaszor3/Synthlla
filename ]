@@ -1,0 +1,8 @@
+#pragma once
+
+#include "../Synthall/Synthall"
+#include <wx/wx.h>
+
+class synInstrument :public instrument, public wxWindow {
+
+};

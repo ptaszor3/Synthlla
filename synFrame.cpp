@@ -1,8 +1,11 @@
 #include "synFrame.hpp"
 #include "synSlider.hpp"
 #include "synARSD.hpp"
+#include "synQuadraticARSD.hpp"
 #include "synRectangle.hpp"
+#include "synVibrato.hpp"
 #include "synSynchronizedVibrato.hpp"
+#include "synUnsynchronizedVibrato.hpp"
 #include "synEffectInputsManager.hpp"
 #include "synSignalInputsManager.hpp"
 
@@ -28,6 +31,7 @@ synFrame::synFrame(std::string title, wxPoint position, wxSize size)
 	menu_new_effects_submenu->Append(903, "Unsynchronized vibrato");
 	menu_new_effects_submenu->Append(904, "Synchronized tremolo");
 	menu_new_effects_submenu->Append(905, "Unsynchronized tremolo");
+	menu_new_effects_submenu->Append(906, "Vibrato");
 
 	menu_new->AppendSubMenu(menu_new_effects_submenu, "Effect...");
 
@@ -99,16 +103,29 @@ void synFrame::OnSynchronizedVibrato(wxCommandEvent& event) {
 	notebook->AddPage(new synSynchronizedVibrato(notebook), "Synchronized vibrato");
 }
 
+void synFrame::OnUnsynchronizedVibrato(wxCommandEvent& event) {
+	notebook->AddPage(new synUnsynchronizedVibrato(notebook), "Unsynchronized vibrato");
+}
+
+void synFrame::OnQuadraticARSD(wxCommandEvent& event) {
+	notebook->AddPage(new synQuadraticARSD(notebook), "Quadratic ARSD");
+}
+
+void synFrame::OnVibrato(wxCommandEvent& event) {
+	notebook->AddPage(new synVibrato(notebook), "Vibrato");
+}
+
 wxBEGIN_EVENT_TABLE(synFrame, wxFrame)
 	EVT_MENU(901, synFrame::OnVolumeControl)
 	EVT_MENU(902, synFrame::OnSynchronizedVibrato)
-	//EVT_MENU(903, synFrame::OnUnsynchronizedVibrato)
+	EVT_MENU(903, synFrame::OnUnsynchronizedVibrato)
 	//EVT_MENU(904, synFrame::OnSynchronizedTremolo)
 	//EVT_MENU(905, synFrame::OnUnsynchronizedTremolo)
+	EVT_MENU(906, synFrame::OnVibrato)
 
 	EVT_MENU(701, synFrame::OnRectangle)
 	//EVT_MENU(702, synFrame::OnAdditiveSynthesizer)
 
-	//EVT_MENU(801, synFrame::OnQuadraticARSD)
+	EVT_MENU(801, synFrame::OnQuadraticARSD)
 	//EVT_MENU(802, synFrame::OnLinearARSD)
 wxEND_EVENT_TABLE();

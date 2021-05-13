@@ -1,3 +1,4 @@
+#pragma once
 #include "synSlider.hpp"
 #include "../Synthall/include/envelopes/arsd.hpp"
 
