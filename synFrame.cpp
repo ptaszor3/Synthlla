@@ -1,6 +1,9 @@
 #include "synFrame.hpp"
+
 #include "synSlider.hpp"
 #include "synARSD.hpp"
+#include "synMIDIInput.hpp"
+
 #include "synQuadraticARSD.hpp"
 #include "synRectangle.hpp"
 #include "synVibrato.hpp"
@@ -13,7 +16,7 @@
 #include <thread>
 
 outputs::ALSAOutputStream output;
-inputs::MIDIInput input;
+//inputs::MIDIInput input;
 
 synSignalInputsManager signal_manager;
 synEffectInputsManager effect_manager;
@@ -64,17 +67,18 @@ synFrame::synFrame(std::string title, wxPoint position, wxSize size)
 	instrument = new Instrument(new tones::basic::Sqr, new envelopes::arsd::Quadratic, new timers::RealTimeTimer);
 	output.instrument = instrument;
 	output.open();
-	input.instrument = instrument;
+	//input.instrument = instrument;
 
 	instrument->play(Note(440, 0_ds, 1_ds, 0.3));
 	effects::VolumeControl* control = new effects::VolumeControl();
 	control->volume = 0.3;
 	instrument->whole_sample_effects.push_back(control);
 	
-	system("aconnect 20 128");
+	//system("aconnect 20 128");
+	notebook->AddPage(new synMIDIInput(notebook, wxID_ANY, instrument), "Instrument");
 
 	new std::thread([]()->void{while(true)output.update();});
-	new std::thread([]()->void{while(true)input.update();});
+	//new std::thread([]()->void{while(true)input.update();});
 
 	notebook->AddPage(new synARSD(this, wxID_ANY, &reinterpret_cast<envelopes::arsd::Quadratic*>(instrument->envelope)->arsd, wxPoint(0, 0)), _("ARSD"));
 	
@@ -84,7 +88,7 @@ synFrame::synFrame(std::string title, wxPoint position, wxSize size)
 	::signal_manager.insert("Sinusoidal", reinterpret_cast<Signal*>(new tones::basic::Sin));
 
 	auto main_signals = ::signal_manager.get_new_input(this, wxID_ANY, reinterpret_cast<Signal**>(&instrument->tone), wxPoint(0, 400), wxSize(300, 30));
-	auto main_effect = ::effect_manager.get_new_input(this, wxID_ANY, instrument, wxPoint(0, 430), wxSize(300, 30));
+	auto main_effect = ::effect_manager.get_new_single_sample_input(this, wxID_ANY, instrument, wxPoint(0, 430), wxSize(300, 30));
 }
 
 void synFrame::OnVolumeControl(wxCommandEvent& event) {
@@ -129,3 +133,4 @@ wxBEGIN_EVENT_TABLE(synFrame, wxFrame)
 	EVT_MENU(801, synFrame::OnQuadraticARSD)
 	//EVT_MENU(802, synFrame::OnLinearARSD)
 wxEND_EVENT_TABLE();
+

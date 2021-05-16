@@ -2,94 +2,118 @@
 
 #include <algorithm>
 
-synEffectInput::synEffectInput(wxWindow* parent, wxWindowID id, Instrument* c_destination, wxPoint position, wxSize size)
-:wxChoice{parent, id, position, size}, destination{c_destination}, last_choice_type{NONE} {
+template class synEffectInput<SingleSampleEffect>;
+template class synEffectInput<WholeSampleEffect>;
+
+template<class EffectType>
+synEffectInput<EffectType>::synEffectInput(wxWindow* parent, wxWindowID id, Instrument* c_destination, wxPoint position, wxSize size)
+:wxChoice{parent, id, position, size}, destination{c_destination}, position{0} {
 	Bind(wxEVT_CHOICE, &synEffectInput::OnChoice, this, wxID_ANY);
 }
 
-void synEffectInput::insert(std::string name, SingleSampleEffect* effect) {
-	bool is_there = false;
-	try {
-		single_sample_effects.at(name);
-		is_there = true;
-
+template<>
+synEffectInput<SingleSampleEffect>::~synEffectInput() {
+	if(*last_effect) {
+		destination->single_sample_effects.erase(last_effect);
 	}
-	catch(...){}
+}
+
+template<>
+synEffectInput<WholeSampleEffect>::~synEffectInput() {
+	if(*last_effect) {
+		destination->whole_sample_effects.erase(last_effect);
+	}
+}
+
+template<class EffectType>
+void synEffectInput<EffectType>::insert(std::string name,EffectType* effect) {
+	bool is_there = false;
 	try { 
-		whole_sample_effects.at(name);
+		effects.at(name);
 		is_there = true;
 	}
 	catch(...){}
 
 	if(!is_there) {
-		single_sample_effects.insert({name, effect});
+		effects.insert({name, effect});
 		Append(name);
 	}
 	else
 		throw(NameHasAlreadyBeenInserted_exception());
 }
 
-void synEffectInput::insert(std::string name, WholeSampleEffect* effect) {
-	bool is_there = false;
-	try {
-		single_sample_effects.at(name);
-		is_there = true;
-
-	}
-	catch(...){}
-	try { 
-		whole_sample_effects.at(name);
-		is_there = true;
-	}
-	catch(...){}
-
-	if(!is_there) {
-		whole_sample_effects.insert({name, effect});
-		Append(name);
-	}
-	else
-		throw(NameHasAlreadyBeenInserted_exception());
-}
-
-void synEffectInput::erase_single_sample_effect(std::string name) {
+template<>
+void synEffectInput<SingleSampleEffect>::erase(std::string name) {
 	decltype(destination->single_sample_effects.begin()) iterator_to_element_getting_erased;
-	if((iterator_to_element_getting_erased = std::find(destination->single_sample_effects.begin(), destination->single_sample_effects.end(), single_sample_effects.at(name))) != destination->single_sample_effects.end());
+	if((iterator_to_element_getting_erased = std::find(destination->single_sample_effects.begin(), destination->single_sample_effects.end(), effects.at(name))) != destination->single_sample_effects.end());
 		destination->single_sample_effects.erase(iterator_to_element_getting_erased);
-	single_sample_effects.erase(name);
+	effects.erase(name);
 	Delete(FindString(name));
 }
 
-void synEffectInput::erase_whole_sample_effect(std::string name) {
+template<>
+void synEffectInput<WholeSampleEffect>::erase(std::string name) {
 	decltype(destination->whole_sample_effects.begin()) iterator_to_element_getting_erased;
-	if((iterator_to_element_getting_erased = std::find(destination->whole_sample_effects.begin(), destination->whole_sample_effects.end(), whole_sample_effects.at(name))) != destination->whole_sample_effects.end());
+	if((iterator_to_element_getting_erased = std::find(destination->whole_sample_effects.begin(), destination->whole_sample_effects.end(), effects.at(name))) != destination->whole_sample_effects.end());
 		destination->whole_sample_effects.erase(iterator_to_element_getting_erased);
-	whole_sample_effects.erase(name);
+	effects.erase(name);
 	Delete(FindString(name));
 }
 
-void synEffectInput::OnChoice(wxCommandEvent& event) {
-	if(last_choice_type != NONE) {
-		switch(last_choice_type) {
-			case SINGLE_SAMPLE_EFFECT:
-				destination->single_sample_effects.erase(std::find(destination->single_sample_effects.begin(), destination->single_sample_effects.end(), last.single_sample_effect));
-			break;
-			case WHOLE_SAMPLE_EFFECT:
-				destination->whole_sample_effects.erase(std::find(destination->whole_sample_effects.begin(), destination->whole_sample_effects.end(), last.whole_sample_effect));
-			break;
-		}
+template<>
+void synEffectInput<SingleSampleEffect>::move_up() {
+	if(position == 0)
+		throw CannotGoHigher_exception();
+	SingleSampleEffect* effect_buffer = destination->single_sample_effects[position];
+	destination->single_sample_effects.erase(last_effect--);
+	destination->single_sample_effects.insert(destination->single_sample_effects.begin() + --position, effect_buffer);
+}
+
+template<>
+void synEffectInput<WholeSampleEffect>::move_up() {
+	if(position == 0)
+		throw CannotGoHigher_exception();
+	WholeSampleEffect* effect_buffer = destination->whole_sample_effects[position];
+	destination->whole_sample_effects.erase(last_effect--);
+	destination->whole_sample_effects.insert(destination->whole_sample_effects.begin() + --position, effect_buffer);
+}
+
+template<>
+void synEffectInput<SingleSampleEffect>::move_down() {
+	if(destination->single_sample_effects.begin() + position >= destination->single_sample_effects.end())
+		throw CannotGoLower_exception();
+	SingleSampleEffect* effect_buffer = destination->single_sample_effects[position];
+	destination->single_sample_effects.erase(last_effect++);
+	destination->single_sample_effects.insert(destination->single_sample_effects.begin() + ++position, effect_buffer);
+}
+
+template<>
+void synEffectInput<WholeSampleEffect>::move_down() {
+	if(destination->whole_sample_effects.begin() + position >= destination->whole_sample_effects.end())
+		throw CannotGoLower_exception();
+	WholeSampleEffect* effect_buffer = destination->whole_sample_effects[position];
+	destination->whole_sample_effects.erase(last_effect++);
+	destination->whole_sample_effects.insert(destination->whole_sample_effects.begin() + ++position, effect_buffer);
+}
+
+template<>
+void synEffectInput<SingleSampleEffect>::OnChoice(wxCommandEvent& event) {
+	if(is_set) {
+		destination->single_sample_effects.erase(std::find(destination->single_sample_effects.begin(), destination->single_sample_effects.end(), *last_effect));
 	}
 
-	try {
-		destination->single_sample_effects.push_back(single_sample_effects.at(event.GetString().ToStdString()));
-		last.single_sample_effect = single_sample_effects.at(event.GetString().ToStdString());
-		last_choice_type = SINGLE_SAMPLE_EFFECT;
+	last_effect = destination->single_sample_effects.insert(destination->single_sample_effects.begin() + position, effects.at(event.GetString().ToStdString()));
+	is_set = true;
+	event.Skip();
+}
+
+template<class WholeSampleEffect>
+void synEffectInput<WholeSampleEffect>::OnChoice(wxCommandEvent& event) {
+	if(is_set) {
+		destination->whole_sample_effects.erase(std::find(destination->whole_sample_effects.begin(), destination->whole_sample_effects.end(), *last_effect));
 	}
-	catch(...) {}
-	try {
-		destination->whole_sample_effects.push_back(whole_sample_effects.at(event.GetString().ToStdString()));
-		last.whole_sample_effect = whole_sample_effects.at(event.GetString().ToStdString());
-		last_choice_type = WHOLE_SAMPLE_EFFECT;
-	}
-	catch(...) {}
+
+	last_effect = destination->whole_sample_effects.insert(destination->whole_sample_effects.begin() + position, effects.at(event.GetString().ToStdString()));
+	is_set = true;
 	event.Skip();
 }
