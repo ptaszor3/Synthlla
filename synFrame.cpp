@@ -3,6 +3,7 @@
 #include "synSlider.hpp"
 #include "synARSD.hpp"
 #include "synMIDIInput.hpp"
+#include "synEffectContext.hpp"
 
 #include "synQuadraticARSD.hpp"
 #include "synRectangle.hpp"
@@ -74,8 +75,16 @@ synFrame::synFrame(std::string title, wxPoint position, wxSize size)
 	control->volume = 0.3;
 	instrument->whole_sample_effects.push_back(control);
 	
-	//system("aconnect 20 128");
 	notebook->AddPage(new synMIDIInput(notebook, wxID_ANY, instrument), "Instrument");
+
+	synEffectContext<SingleSampleEffect>* context = new synEffectContext(notebook, wxID_ANY, &(instrument->single_sample_effects), "Single sample effects");
+	context->add_effect("vibrato", new effects::SynchronizedVibrato(new tones::basic::Sin, 100, 0.0000001_ds));
+	context->add_effect("vibrato 1", new effects::SynchronizedVibrato(new tones::basic::Sin, 100, 0.0000001_ds));
+	context->add_effect("vibrato 2", new effects::SynchronizedVibrato(new tones::basic::Sin, 100, 0.0000001_ds));
+	context->add_effect("vibrato 3", new effects::SynchronizedVibrato(new tones::basic::Sin, 100, 0.0000001_ds));
+	context->add_effect("vibrato 4", new effects::SynchronizedVibrato(new tones::basic::Sin, 100, 0.0000001_ds));
+
+	notebook->AddPage(context, "Bududud");
 
 	new std::thread([]()->void{while(true)output.update();});
 	//new std::thread([]()->void{while(true)input.update();});

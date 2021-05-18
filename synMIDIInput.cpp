@@ -3,8 +3,8 @@
 synMIDIInput::synMIDIInput(wxWindow* parent, wxWindowID id, Instrument* c_instrument, wxPoint position, wxSize size) 
 :wxWindow(parent, id, position, size), inputs::MIDIInput{c_instrument} {
 	text = new wxStaticText{this, wxID_ANY, "Midi input", wxPoint{15, 5}};
-	choice = new wxChoice{this, wxID_ANY, wxPoint(15, 25)};
-	refresh = new wxButton{this, wxID_ANY, "Refresh", wxPoint{300, 25}};
+	choice = new wxChoice{this, wxID_ANY, wxPoint(15, 30), wxSize(200, 35)};
+	refresh = new wxButton{this, wxID_ANY, "Refresh", wxPoint{215, 30}, wxSize(70, 35)};
 
 	update();
 }
