@@ -1,5 +1,6 @@
 #include "synEffectContext.hpp"
 
+#include <wx/choicdlg.h>
 #include <algorithm>
 
 template<class SampleType>
@@ -98,9 +99,26 @@ synEffectContext<SampleType>::synEffectContext(wxWindow* parent, wxWindowID id, 
 	Bind(wxEVT_BUTTON, &(this->OnAdd), this, 9);
 }
 
-template<class SampleType>
-void synEffectContext<SampleType>::OnAdd(wxCommandEvent& event) {
-	event.Skip();
+template<>
+void synEffectContext<SingleSampleEffect>::OnAdd(wxCommandEvent& event) {
+	if(effect_manager.get_all_single_sample_effects_names().GetCount()) {
+		std::string default_name = wxGetSingleChoice("Select desired effect:", "Effect selection", effect_manager.get_all_single_sample_effects_names(), 0).ToStdString();
+		SingleSampleEffect* effect_buffer = effect_manager.get_single_sample_effect_named(default_name);
+		std::string name_buffer = wxGetTextFromUser("Type effects name", "Effect's naming", default_name).ToStdString();
+		add_effect(name_buffer, effect_buffer);
+		event.Skip();
+	}
+}
+
+template<>
+void synEffectContext<WholeSampleEffect>::OnAdd(wxCommandEvent& event) {
+	if(effect_manager.get_all_whole_sample_effects_names().GetCount()) {
+		std::string default_name = wxGetSingleChoice("Select desired effect:", "Effect selection", effect_manager.get_all_whole_sample_effects_names()).ToStdString();
+		WholeSampleEffect* effect_buffer = effect_manager.get_whole_sample_effect_named(default_name);
+		std::string name_buffer = wxGetTextFromUser("Type effects name", "Effect's naming", default_name).ToStdString();
+		add_effect(name_buffer, effect_buffer);
+		event.Skip();
+	}
 }
 
 template class synEffectContext<SingleSampleEffect>;

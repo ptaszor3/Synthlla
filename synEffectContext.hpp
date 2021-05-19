@@ -1,11 +1,14 @@
 #pragma once
 
 #include "synEffectRepresentation.hpp"
+#include "synEffectInputsManager.hpp"
 
 #include "../Synthall/Synthall"
 #include <wx/wx.h>
 #include <vector>
 #include <map>
+
+extern synEffectInputsManager effect_manager;
 
 template <class SampleType>
 class synEffectContext :public wxWindow {
@@ -30,5 +33,5 @@ public:
 	synEffectContext(wxWindow* parent, wxWindowID id, std::vector<SampleType*>*, std::string, wxPoint position = wxDefaultPosition, wxSize size = wxDefaultSize);
 };
 
-extern template class synEffectContext<SingleSampleEffect>;
-extern template class synEffectContext<WholeSampleEffect>;
+//extern template class synEffectContext<SingleSampleEffect>;
+//extern template class synEffectContext<WholeSampleEffect>;

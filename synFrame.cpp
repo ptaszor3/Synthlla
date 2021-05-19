@@ -96,8 +96,8 @@ synFrame::synFrame(std::string title, wxPoint position, wxSize size)
 	::signal_manager.insert("Triangular", reinterpret_cast<Signal*>(new tones::basic::Tri));
 	::signal_manager.insert("Sinusoidal", reinterpret_cast<Signal*>(new tones::basic::Sin));
 
-	auto main_signals = ::signal_manager.get_new_input(this, wxID_ANY, reinterpret_cast<Signal**>(&instrument->tone), wxPoint(0, 400), wxSize(300, 30));
-	auto main_effect = ::effect_manager.get_new_single_sample_input(this, wxID_ANY, instrument, wxPoint(0, 430), wxSize(300, 30));
+	auto main_signals = ::signal_manager.get_new_tone_input(this, wxID_ANY, reinterpret_cast<Signal**>(&instrument->tone), "Tone", wxPoint(0, 400), wxSize(300, 30));
+	//auto main_effect = ::effect_manager.get_new_single_sample_input(this, wxID_ANY, instrument, wxPoint(0, 430), wxSize(300, 30));
 }
 
 void synFrame::OnVolumeControl(wxCommandEvent& event) {

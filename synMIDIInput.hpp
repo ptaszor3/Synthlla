@@ -10,7 +10,7 @@ class synMIDIInput :public wxWindow, private inputs::MIDIInput {
 	wxButton* refresh;
 	std::map<std::string, int> ids;
 public:
-	synMIDIInput(wxWindow* parent, wxWindowID id, Instrument* c_instrument, wxPoint position = wxDefaultPosition, wxSize size = wxDefaultSize);
+	synMIDIInput(wxWindow* parent, wxWindowID id, Instrument* c_instrument, wxPoint position = wxDefaultPosition);
 
 	void OnChoice(wxCommandEvent& event);
 	void OnButton(wxCommandEvent& event);

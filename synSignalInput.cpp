@@ -1,13 +1,16 @@
 #include "synSignalInput.hpp"
 
-synSignalInput::synSignalInput(wxWindow* parent, wxWindowID id, Signal** c_destination, wxPoint position, wxSize size)
-:wxChoice{parent, id, position, size}, destination{c_destination} {
+synSignalInput::synSignalInput(wxWindow* parent, wxWindowID id, Signal** c_destination, std::string c_title, wxPoint position)
+:wxWindow{parent, id, position, {230, 75}, wxBORDER_THEME}, destination{c_destination} {
+	title = new wxStaticText(this, wxID_ANY, c_title, {15, 5}, {-1, 15});
+	choice = new wxChoice(this, wxID_ANY, {15, 30}, {200, 30});
+	
 	Bind(wxEVT_CHOICE, &synSignalInput::OnChoice, this, wxID_ANY);
 }
 
 void synSignalInput::insert(std::string name, Signal* component) {
 	components.insert({name, component});
-	Append(name);
+	choice->Append(name);
 }
 
 void synSignalInput::erase(std::string name) {
@@ -15,7 +18,7 @@ void synSignalInput::erase(std::string name) {
 	if(*destination == components.at(name))
 		is_set = true;
 	components.erase(name);
-	Delete(FindString(name));
+	choice->Delete(choice->FindString(name));
 	if(is_set)
 		*destination = components.begin()->second;
 }

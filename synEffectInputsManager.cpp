@@ -71,3 +71,27 @@ void synEffectInputsManager::free_input(synEffectInput<WholeSampleEffect>* to_be
 	whole_sample_inputs.erase(to_be_freed);
 	delete to_be_freed;
 }
+
+SingleSampleEffect* synEffectInputsManager::get_single_sample_effect_named(std::string name) {
+	return single_sample_effects.at(name);
+}
+
+WholeSampleEffect* synEffectInputsManager::get_whole_sample_effect_named(std::string name) {
+	return whole_sample_effects.at(name);
+}
+
+wxArrayString synEffectInputsManager::get_all_single_sample_effects_names() {
+	wxArrayString buffer;
+	for(auto x : single_sample_effects)
+		buffer.Add(x.first);
+
+	return buffer;
+}
+
+wxArrayString synEffectInputsManager::get_all_whole_sample_effects_names() {
+	wxArrayString buffer;
+	for(auto x : whole_sample_effects)
+		buffer.Add(x.first);
+
+	return buffer;
+}

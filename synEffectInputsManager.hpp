@@ -20,6 +20,10 @@ public:
 	synEffectInput<WholeSampleEffect>* get_new_whole_sample_input(wxWindow* parent, wxWindowID id, Instrument* c_destination, wxPoint position = wxDefaultPosition, wxSize size = wxDefaultSize);
 	void free_input(synEffectInput<SingleSampleEffect>* to_be_freed);
 	void free_input(synEffectInput<WholeSampleEffect>* to_be_freed);
+	SingleSampleEffect* get_single_sample_effect_named(std::string);
+	WholeSampleEffect* get_whole_sample_effect_named(std::string);
+	wxArrayString get_all_single_sample_effects_names();
+	wxArrayString get_all_whole_sample_effects_names();
 
 	class NameHasAlreadyBeenUsed_exception {
 	public:
