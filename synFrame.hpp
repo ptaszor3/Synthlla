@@ -4,15 +4,15 @@
 #include "../Synthall/Synthall"
 
 class synFrame :public wxFrame {
-	Instrument* instrument;
+	//Instrument* instrument;
 	wxAuiNotebook* notebook;
 public:
 	synFrame(std::string title, wxPoint position, wxSize size);
 	void OnVolumeControl(wxCommandEvent& event);
-	void OnSynchronizedVibrato(wxCommandEvent& event);
-	void OnUnsynchronizedVibrato(wxCommandEvent& event);
-	void OnSynchronizedTremolo(wxCommandEvent& event);
-	void OnUnsynchronizedTremolo(wxCommandEvent& event);
+	//void OnSynchronizedVibrato(wxCommandEvent& event);
+	//void OnUnsynchronizedVibrato(wxCommandEvent& event);
+	//void OnSynchronizedTremolo(wxCommandEvent& event);
+	//void OnUnsynchronizedTremolo(wxCommandEvent& event);
 	void OnVibrato(wxCommandEvent& event);
 
 	void OnRectangle(wxCommandEvent& event);

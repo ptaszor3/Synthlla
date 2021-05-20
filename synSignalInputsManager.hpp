@@ -13,9 +13,16 @@ class synSignalInputsManager {
 	std::unordered_set<synSignalInput*> inputs;
 
 	Signal* const default_signal = new tones::basic::Sin();
+	Envelope* const default_envelope = new envelopes::basic::NoEnvelope();
 public:
-	Signal* get_default_signal(){
+	Signal* get_default_signal() {
 		return default_signal;
+	}
+	Tone* get_default_tone() {
+		return dynamic_cast<Tone*>(default_signal);
+	}
+	Envelope* get_default_envelope() {
+		return default_envelope;
 	}
 	void insert(std::string, Signal*);
 	void erase_signal(std::string);
