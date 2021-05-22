@@ -1,10 +1,10 @@
 #include "synMIDIInput.hpp"
 
 synMIDIInput::synMIDIInput(wxWindow* parent, wxWindowID id, Instrument* c_instrument, wxPoint position) 
-:wxWindow(parent, id, position, {300, 70}, wxBORDER_THEME), inputs::MIDIInput{c_instrument} {
+:wxWindow(parent, id, position, {230, 75}, wxBORDER_THEME), inputs::MIDIInput{c_instrument} {
 	text = new wxStaticText{this, wxID_ANY, "Midi input", wxPoint{15, 5}, {-1, 20}};
-	choice = new wxChoice{this, wxID_ANY, wxPoint(15, 30), wxSize(200, 30)};
-	refresh = new wxButton{this, wxID_ANY, "Refresh", wxPoint{215, 30}, wxSize(70, 30)};
+	choice = new wxChoice{this, wxID_ANY, wxPoint(15, 30), wxSize(130, 30)};
+	refresh = new wxButton{this, wxID_ANY, "Refresh", wxPoint{145, 30}, wxSize(70, 30)};
 
 	update();
 }

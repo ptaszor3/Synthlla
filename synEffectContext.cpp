@@ -91,7 +91,7 @@ void synEffectContext<SampleType>::repaint() {
 
 template<class SampleType>
 synEffectContext<SampleType>::synEffectContext(wxWindow* parent, wxWindowID id, std::vector<SampleType*>* c_effects, std::string section_title, wxPoint position, wxSize size) 
-:wxWindow(parent, id, position, size, wxVSCROLL) {
+:wxWindow(parent, id, position, {235, size.GetHeight()}, wxBORDER_THEME) {
 	title = new wxStaticText(this, wxID_ANY, section_title, wxPoint(15, 15), wxSize(100, -1));
 	add_effect_button = new wxButton(this, 9, "Add new...", wxPoint(115, 5));
 

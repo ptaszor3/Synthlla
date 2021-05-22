@@ -14,12 +14,15 @@ public:
 	//void OnSynchronizedTremolo(wxCommandEvent& event);
 	//void OnUnsynchronizedTremolo(wxCommandEvent& event);
 	void OnVibrato(wxCommandEvent& event);
+	void OnTremolo(wxCommandEvent& event);
 
 	void OnRectangle(wxCommandEvent& event);
 	void OnAdditiveSynthesizer(wxCommandEvent& event);
 
 	void OnQuadraticARSD(wxCommandEvent& event);
 	void OnLinearARSD(wxCommandEvent& event);
+
+	void OnInstrument(wxCommandEvent&);
 	
 	wxDECLARE_EVENT_TABLE();
 };

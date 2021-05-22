@@ -29,8 +29,8 @@ class synEffectContext :public wxWindow {
 
 	void repaint();
 public:
-	void add_effect(std::string title, SampleType* effect);
 	synEffectContext(wxWindow* parent, wxWindowID id, std::vector<SampleType*>*, std::string, wxPoint position = wxDefaultPosition, wxSize size = wxDefaultSize);
+	void add_effect(std::string title, SampleType* effect);
 };
 
 //extern template class synEffectContext<SingleSampleEffect>;
